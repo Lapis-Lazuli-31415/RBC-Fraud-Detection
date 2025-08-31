@@ -6,10 +6,9 @@ import streamlit as st
 import joblib
 import pandas as pd
 from streamlit_folium import st_folium
-import pydeck as pdk
 
 # Load the model
-xgb_model = joblib.load("fraud_detection_xgb.pkl")
+pipeline = joblib.load("fraud_detection_xgb.pkl")
 
 def transform_input(data: dict):
     df = pd.DataFrame([data])
@@ -88,7 +87,8 @@ def transform_input(data: dict):
                'amt_hour_risk_prod', 'category_fraud_r', 'month', 
                'amt_log', 'hour', 'dis_amt_prod']]
 
-# --- Streamlit App ---
+
+# Streamlit App
 st.title("Fraud Detection Predictor")
 
 
@@ -144,8 +144,8 @@ if st.button("Predict Fraud"):
     df_processed = transform_input(raw_data)
     
     # Prediction
-    pred = xgb_model.predict(df_processed)[0]
-    proba = xgb_model.predict_proba(df_processed)[:,1][0]
+    pred = pipeline.predict(df_processed)[0]
+    proba = pipeline.predict_proba(df_processed)[:,1][0]
     
     if pred == 1:
         st.error(f"Fraudulent Transaction (Probability: {proba:.2%})")
